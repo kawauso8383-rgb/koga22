@@ -91,7 +91,7 @@
 
       <div class="card">
         <div class="card-title">前日販売数量 (自動読み込み)</div>
-        <div class="card-subtext">※前日15時報告シートから自動取得されています</div>
+        <div class="card-subtext">※最新データ集約シートから自動取得されています</div>
         <div class="form-group"><label>昨日ハイオク</label><input type="text" class="readonly" id="prev_hiok" readonly value="..."></div>
         <div class="form-group"><label>昨日レギュラー</label><input type="text" class="readonly" id="prev_reg" readonly value="..."></div>
         <div class="form-group"><label>昨日軽油</label><input type="text" class="readonly" id="prev_keiyu" readonly value="..."></div>
@@ -237,7 +237,6 @@
   </div>
 
   <script>
-    // ★古賀SS用 GASデプロイURLをここに貼り付けてください
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyT9UhHlqT5Oyf0ge0n5q6XoNPNPtKAYwMZZ7b-JqL-Wxx-aDxtGES_HBJVC1BLlGT-/exec";
 
     let currentTab = '8h';
@@ -422,13 +421,14 @@
       const tomLorrySel = document.getElementById("tom_lorry_status").value;
       const tomLorryVal = tomLorrySel === 'manual' ? (document.getElementById("tom_lorry_manual").value.trim() || "明日のローリー入庫問題ありません。") : tomLorrySel;
 
-      // ★8時報告時の本日入荷予定ローリー情報のテキスト組み立て
+      // ★8時報告：油種ごとに縦に改行してきれいに揃える
       let todayLorryDetailParts = [];
-      if (v('today_lorry_h') !== '0') todayLorryDetailParts.push(`H ${fmt('today_lorry_h')}k(${document.getElementById('today_lorry_h_status').value})`);
-      if (v('today_lorry_r') !== '0') todayLorryDetailParts.push(`R ${fmt('today_lorry_r')}k(${document.getElementById('today_lorry_r_status').value})`);
-      if (v('today_lorry_d') !== '0') todayLorryDetailParts.push(`D ${fmt('today_lorry_d')}k(${document.getElementById('today_lorry_d_status').value})`);
-      if (v('today_lorry_k') !== '0') todayLorryDetailParts.push(`K ${fmt('today_lorry_k')}k(${document.getElementById('today_lorry_k_status').value})`);
-      const todayLorryDetailText = todayLorryDetailParts.length > 0 ? todayLorryDetailParts.join(" / ") : "";
+      if (v('today_lorry_h') !== '0') todayLorryDetailParts.push(`ハイオク・：${fmt('today_lorry_h')}k(${document.getElementById('today_lorry_h_status').value})`);
+      if (v('today_lorry_r') !== '0') todayLorryDetailParts.push(`レギュラー：${fmt('today_lorry_r')}k(${document.getElementById('today_lorry_r_status').value})`);
+      if (v('today_lorry_d') !== '0') todayLorryDetailParts.push(`軽油・・・：${fmt('today_lorry_d')}k(${document.getElementById('today_lorry_d_status').value})`);
+      if (v('today_lorry_k') !== '0') todayLorryDetailParts.push(`灯油・・・：${fmt('today_lorry_k')}k(${document.getElementById('today_lorry_k_status').value})`);
+      
+      const todayLorryDetailText = todayLorryDetailParts.length > 0 ? todayLorryDetailParts.join("\n") : "";
 
       const totalReg8 = (
         (parseFloat(v('stock_reg1')) || 0) + 
@@ -496,7 +496,7 @@
 
       let lineText = "";
       if (currentTab === '8h') {
-        const todayLorryBlock = todayLorryDetailText !== "" ? `\n本日入荷予定：${todayLorryDetailText}\n` : "\n";
+        const todayLorryBlock = todayLorryDetailText !== "" ? `\n本日入荷予定：\n${todayLorryDetailText}\n` : "\n";
         lineText = 
 `${storeName}
 
