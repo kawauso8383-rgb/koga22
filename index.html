@@ -163,7 +163,7 @@
         <div class="form-group"><label>スプレー (台)</label><input type="number" id="cum_spray" class="nav-input cum-calc" enterkeyhint="next"></div>
         <div style="margin-top: 8px;">
           <label style="font-size: 0.85rem; font-weight: 600;">その他手打ち (コーティングなど)</label>
-          <input type="text" class="full-width-input nav-input" placeholder="例：コーティング：2台" id="other_manual" enterkeyhint="next">
+          <input type="text" class="full-width-input nav-input" placeholder="例：キーパー" id="other_manual" enterkeyhint="next">
         </div>
       </div>
 
@@ -421,7 +421,6 @@
       const tomLorrySel = document.getElementById("tom_lorry_status").value;
       const tomLorryVal = tomLorrySel === 'manual' ? (document.getElementById("tom_lorry_manual").value.trim() || "明日のローリー入庫問題ありません。") : tomLorrySel;
 
-      // ★8時報告：油種ごとに縦に改行してきれいに揃える
       let todayLorryDetailParts = [];
       if (v('today_lorry_h') !== '0') todayLorryDetailParts.push(`ハイオク・：${fmt('today_lorry_h')}k(${document.getElementById('today_lorry_h_status').value})`);
       if (v('today_lorry_r') !== '0') todayLorryDetailParts.push(`レギュラー：${fmt('today_lorry_r')}k(${document.getElementById('today_lorry_r_status').value})`);
@@ -442,6 +441,12 @@
         (parseFloat(v('stock15_reg2')) || 0) + 
         (parseFloat(v('stock15_reg3')) || 0) + 
         (parseFloat(v('stock15_reg4')) || 0)
+      ).toFixed(1);
+
+      // ★ハイオク＋レギュラーの合計（ガソリン）を計算
+      const totalGasoline = (
+        (parseFloat(v('cum_hiok')) || 0) + 
+        (parseFloat(v('cum_reg')) || 0)
       ).toFixed(1);
 
       const payload = {
@@ -477,8 +482,8 @@
 
       const memoPart = (rawMemo !== "" && rawMemo !== "0") ? `\n\nメモ：\n${rawMemo}` : "";
 
-      let salesText = `ハイオク・・・：${fmt('cum_hiok')}
-レギュラー・・：${fmt('cum_reg')}
+      // ★ガソリン（ハイオク＋レギュラー合計）で表示
+      let salesText = `ガソリン・・・：${totalGasoline}
 軽油・・・・・：${fmt('cum_keiyu')}
 灯油・・・・・：${fmt('cum_toyu')}
 オイル・・・・：${v('cum_oil')} 台
